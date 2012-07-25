@@ -1,0 +1,55 @@
+Hacking on python-tdbus
+=======================
+
+I have tried to keep the module simple. The things that probably contributed
+most to this are the following:
+
+* Python-tdbus does not share the D-BUS connection with other users in the
+  same process.
+
+* Dispatching is implemented in Python instead of using the libdbus
+  dispatching. 
+
+* Arguments to D-BUS messages are provided using native Python types driven by
+  a format string.
+
+Adding a new Event Loop
+=======================
+
+See the file "gevent.py" on how to add an event loop. It comes down to two
+things:
+
+ * Implement an EventInterface subclass that implements your file description
+   watch operations.
+
+ * Implement a subclass of Dispatcher that intializes the EventInterface and
+   connects it to your event loop. You may also need to implement the
+   dispatch() and call_method() operations.
+
+Note that unlike dbus-python, you do not need to implement event loop
+integration in C! It can be done comfortably in Python.
+
+Sending patches
+===============
+
+Please open a ticket on the Github site and send an email to the list.
+
+Links
+=====
+
+ * Github site: https://github.com/geertj/python-tdbus
+ * List (Google groups): https://groups.google.com/forum/#!forum/python-tdbus
+
+Future work
+===========
+
+Some ideas for the future:
+
+ * Provide a Proxy object that acts as a local proxy of a D-BUS object (like in
+   python-dbus). The proxy object should use the Introspectable interface to
+   find out method signatures. This would remove the need to provide argument
+   format strings.
+
+ * Add more event loop interfaces.
+
+ * Re-investigate the Python vs libdbus dispatching again.
