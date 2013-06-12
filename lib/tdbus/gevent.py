@@ -22,7 +22,7 @@ class GEventLoop(EventLoop):
 
     def __init__(self, connection):
         self._connection = connection
-        self._dispatch = get_hub().loop.callback()
+        self._hub = get_hub()
 
     def add_watch(self, watch):
         fd = watch.get_fd()
@@ -56,8 +56,7 @@ class GEventLoop(EventLoop):
         if evtype & core.WRITE:
             flags |= _tdbus.DBUS_WATCH_WRITABLE
         watch.handle(flags)
-        if not self._dispatch.active:
-            self._dispatch.start(self._handle_dispatch, self._connection)
+        self._hub.loop.run_callback(self._handle_dispatch, self._connection)
 
     def add_timeout(self, timeout):
         interval = timeout.get_interval()
@@ -88,8 +87,7 @@ class GEventLoop(EventLoop):
 
     def _handle_timeout(self, timeout):
         timeout.handle()
-        if not self._dispatch.active:
-            self._dispatch.start(self._handle_dispatch, self._connection)
+        self._hub.loop.run_callback(self._handle_dispatch, self._connection)
 
     def _handle_dispatch(self, connection):
         while connection.get_dispatch_status() == _tdbus.DBUS_DISPATCH_DATA_REMAINS:
