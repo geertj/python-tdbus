@@ -36,9 +36,9 @@ def pkgconfig(*args):
 
 setup(
     package_dir = { '': 'lib' },
+    packages = ['tdbus', 'tdbus.test'],
     ext_modules = [Extension('tdbus._tdbus', ['lib/tdbus/_tdbus.c'],
               extra_compile_args = pkgconfig('--cflags', 'dbus-1'),
               extra_link_args =  pkgconfig('--libs', 'dbus-1'))],
-    install_requires = ['setuptools'],
     **version_info
 )
